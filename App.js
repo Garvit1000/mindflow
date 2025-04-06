@@ -7,7 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/config/firebase';
-import LocationService from './src/services/LocationService';
 
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import LoginScreen from './src/screens/LoginScreen';
@@ -20,6 +19,7 @@ import SetupCompleteScreen from './src/screens/SetupCompleteScreen';
 import GenderSelectionScreen from './src/screens/GenderSelectionScreen';
 import MusicScreen from './src/screens/MusicScreen';
 import DietScreen from './src/screens/DietScreen';
+import LoadingScreen from './src/components/LoadingScreen';
 
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 
@@ -83,15 +83,25 @@ function DrawerNavigation() {
 function Navigation() {
   const { user, isNewUser } = useAuth();
   const [isFirstLaunch, setIsFirstLaunch] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem('hasSeenOnboarding').then(value => {
-      setIsFirstLaunch(value === null);
-    });
+    async function checkFirstLaunch() {
+      try {
+        const value = await AsyncStorage.getItem('hasSeenOnboarding');
+        setIsFirstLaunch(value === null);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error checking first launch:', error);
+        setIsLoading(false);
+      }
+    }
+    
+    checkFirstLaunch();
   }, []);
 
-  if (isFirstLaunch === null) {
-    return null; // Or a loading screen
+  if (isLoading) {
+    return <LoadingScreen />;
   }
 
   if (isFirstLaunch) {
@@ -134,32 +144,23 @@ function Navigation() {
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [locationSubscription, setLocationSubscription] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
-      
-      if (user) {
-        // Start location tracking when user logs in
-        const subscription = await LocationService.startLocationTracking(user.uid);
-        setLocationSubscription(subscription);
-      } else if (locationSubscription) {
-        // Remove location subscription when user logs out
-        locationSubscription.remove();
-        setLocationSubscription(null);
-      }
     });
 
     return () => {
       unsubscribe();
-      // Cleanup location subscription when component unmounts
-      if (locationSubscription) {
-        locationSubscription.remove();
-      }
     };
   }, []);
+
+  if (loading) {
+    return (
+      <LoadingScreen />
+    );
+  }
 
   return (
     <NavigationContainer>

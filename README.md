@@ -17,8 +17,8 @@ Follow these steps to get MindFlow up and running on your local machine:
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/auth-app.git
-    cd auth-app
+    git clone https://github.com/Garvit1000/mindflow.git
+    cd mindflow
     ```
 
 2.  **Install dependencies:**
@@ -110,9 +110,3 @@ Contributions are welcome! Here's how you can contribute to the project:
 5.  **Submit a pull request** to the main branch of the original repository.
 
 Please ensure your code follows the project's coding standards and includes relevant tests.
-
-## 📜 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-[![Built with Dokugen](https://img.shields.io/badge/Built%20with-Dokugen-brightgreen)](https://github.com/samueltuoyo15/Dokugen)

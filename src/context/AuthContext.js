@@ -14,16 +14,29 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        // Check if user has completed setup
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setIsNewUser(!userData.setupCompleted);
+      try {
+        if (user) {
+          // Check if user has completed setup
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUser({ ...user, ...userData });
+            setIsNewUser(!userData.setupCompleted);
+          } else {
+            setUser(user);
+            setIsNewUser(true);
+          }
+        } else {
+          setUser(null);
+          setIsNewUser(false);
         }
+      } catch (error) {
+        console.error('Auth state change error:', error);
+        setUser(null);
+        setIsNewUser(false);
+      } finally {
+        setLoading(false);
       }
-      setUser(user);
-      setLoading(false);
     });
 
     return unsubscribe;
@@ -49,10 +62,14 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
+      setLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
     } catch (error) {
+      console.error('Login error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 

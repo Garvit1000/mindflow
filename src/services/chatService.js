@@ -3,8 +3,7 @@ import { collection, addDoc, doc, updateDoc, getDoc, setDoc } from 'firebase/fir
 import { ASSESSMENT_QUESTIONS, analyzeResponse, determineMentalHealthStage, MENTAL_HEALTH_STAGES } from '../models/mentalHealthModel';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GEMINI_API_KEY = 'AIzaSyAmKaUfoXSodEwIKaSN4xWHuv6azit0LRI';
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.EXPO_PUBLIC_GEMINI_API_KEY);
 
 class ChatService {
   constructor(userId) {
@@ -47,7 +46,7 @@ class ChatService {
 
   async processUserMessage(userMessage) {
     try {
-      const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
       
       // Create context with specific instructions for clinical assessment
       let context = `You are an AI mental health assistant conducting a clinical assessment. Your role is to:
