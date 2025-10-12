@@ -92,7 +92,7 @@ import ChatScreen from './src/screens/ChatScreen';
 | AI              | Google Gemini AI                         |
 | Music           | Jamendo API                             |
 | Location        | Expo Location                             |
-| Animation       | Lottie-react-native, react-native-animatable, react-native-reanimated                            |
+| Animation       | Lottie-react-native, react-native-animatable, react-native-reanimated                           |
 
 ## 🤝 Contributing
 
